@@ -8,6 +8,11 @@ function App() {
   const [isWriting, setIsWriting] = useState(false)
   const [selectedPost, setSelectedPost] = useState(null)
   const [currentBoard, setCurrentBoard] = useState('자유게시판')
+  const [comments, setComments] = useState([])
+  const [commentFormData, setCommentFormData] = useState({
+    content: '',
+    author: ''
+  })
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -61,8 +66,65 @@ function App() {
       const response = await fetch(`${API_URL}/${postId}`)
       const data = await response.json()
       setSelectedPost(data)
+      fetchComments(postId)
     } catch (error) {
       console.error('Failed to fetch post detail:', error)
+    }
+  }
+
+  const fetchComments = async (postId) => {
+    try {
+      const response = await fetch(`${API_URL}/${postId}/comments`)
+      const data = await response.json()
+      setComments(data)
+    } catch (error) {
+      console.error('Failed to fetch comments:', error)
+    }
+  }
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!commentFormData.content || !commentFormData.author) {
+      alert('모든 필드를 입력해주세요.')
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/${selectedPost.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(commentFormData)
+      })
+
+      if (response.ok) {
+        setCommentFormData({ content: '', author: '' })
+        fetchComments(selectedPost.id)
+      }
+    } catch (error) {
+      console.error('Failed to create comment:', error)
+      alert('댓글 작성에 실패했습니다.')
+    }
+  }
+
+  const handleCommentDelete = async (commentId) => {
+    if (!window.confirm('댓글을 삭제하시겠습니까?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/${selectedPost.id}/comments/${commentId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        fetchComments(selectedPost.id)
+      }
+    } catch (error) {
+      console.error('Failed to delete comment:', error)
+      alert('댓글 삭제에 실패했습니다.')
     }
   }
 
@@ -249,6 +311,54 @@ function App() {
                 <span>공감 {selectedPost.likes}</span>
               </div>
               <div className="post-detail-content">{selectedPost.content}</div>
+
+              {/* Comments Section */}
+              <div className="comments-section">
+                <div className="comments-header">
+                  <h3>댓글 {comments.length}</h3>
+                </div>
+
+                {/* Comment List */}
+                <div className="comments-list">
+                  {comments.map(comment => (
+                    <div key={comment.id} className="comment-item">
+                      <div className="comment-header">
+                        <span className="comment-author">{comment.author}</span>
+                        <span className="comment-date">{new Date(comment.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div className="comment-content">{comment.content}</div>
+                      <button
+                        className="comment-delete-btn"
+                        onClick={() => handleCommentDelete(comment.id)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Comment Form */}
+                <form className="comment-form" onSubmit={handleCommentSubmit}>
+                  <input
+                    type="text"
+                    placeholder="작성자"
+                    value={commentFormData.author}
+                    onChange={(e) => setCommentFormData({ ...commentFormData, author: e.target.value })}
+                    className="comment-author-input"
+                  />
+                  <div className="comment-input-wrapper">
+                    <textarea
+                      placeholder="댓글을 입력하세요"
+                      value={commentFormData.content}
+                      onChange={(e) => setCommentFormData({ ...commentFormData, content: e.target.value })}
+                      className="comment-textarea"
+                    />
+                    <button type="submit" className="comment-submit-btn">
+                      등록
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
