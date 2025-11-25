@@ -290,15 +290,12 @@ function App() {
       {selectedPost && (
         <div className="modal-overlay" onClick={() => setSelectedPost(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div></div>
-              <button
-                className="close-button"
-                onClick={() => setSelectedPost(null)}
-              >
-                ×
-              </button>
-            </div>
+            <button
+              className="close-button"
+              onClick={() => setSelectedPost(null)}
+            >
+              ×
+            </button>
             <div className="modal-body">
               <div className="post-detail-title">{selectedPost.title}</div>
               <div className="post-detail-meta">
@@ -320,21 +317,25 @@ function App() {
 
                 {/* Comment List */}
                 <div className="comments-list">
-                  {comments.map(comment => (
-                    <div key={comment.id} className="comment-item">
-                      <div className="comment-header">
-                        <span className="comment-author">{comment.author}</span>
-                        <span className="comment-date">{new Date(comment.createdAt).toLocaleString()}</span>
+                  {comments.length === 0 ? (
+                    <div className="no-comments">첫 댓글을 작성해보세요!</div>
+                  ) : (
+                    comments.map(comment => (
+                      <div key={comment.id} className="comment-item">
+                        <div className="comment-header">
+                          <span className="comment-author">{comment.author}</span>
+                          <span className="comment-date">{new Date(comment.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div className="comment-content">{comment.content}</div>
+                        <button
+                          className="comment-delete-btn"
+                          onClick={() => handleCommentDelete(comment.id)}
+                        >
+                          삭제
+                        </button>
                       </div>
-                      <div className="comment-content">{comment.content}</div>
-                      <button
-                        className="comment-delete-btn"
-                        onClick={() => handleCommentDelete(comment.id)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 {/* Comment Form */}

@@ -331,18 +331,13 @@ body {
   position: relative;
 }
 
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
   color: #999;
   padding: 0;
@@ -351,6 +346,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 
 .close-button:hover {
@@ -416,6 +412,13 @@ body {
 
 .comments-list {
   margin-bottom: 20px;
+}
+
+.no-comments {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 14px;
 }
 
 .comment-item {

@@ -30,7 +30,7 @@ Spring Boot + React + MySQL 풀스택 애플리케이션
 
 1. 전체 서비스 실행
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 2. 서비스 접속
